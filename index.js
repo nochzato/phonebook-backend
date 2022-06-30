@@ -1,12 +1,11 @@
 require("dotenv").config();
-const { request } = require("express");
 const express = require("express");
 const morgan = require("morgan");
 const Person = require("./models/persons");
 
 const app = express();
 
-morgan.token("body", (request, response) => {
+morgan.token("body", (request) => {
   if (request.method === "POST") {
     return JSON.stringify(request.body);
   }
@@ -28,8 +27,8 @@ app.get("/api/persons", (request, response) => {
   });
 });
 
-app.get("/info", (request, response) => {
-  Person.countDocuments({}, (error, count) => {
+app.get("/info", (response) => {
+  Person.countDocuments({}, (count) => {
     response.send(`<p>Phonebook has info for ${count} people</p>
     <p>${new Date()}</p>`);
   });
@@ -49,7 +48,7 @@ app.get("/api/persons/:id", (request, response, next) => {
 
 app.delete("/api/persons/:id", (request, response, next) => {
   Person.findByIdAndRemove(request.params.id)
-    .then((result) => {
+    .then(() => {
       response.status(204).end();
     })
     .catch((error) => next(error));
